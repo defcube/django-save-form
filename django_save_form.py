@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 def save_form(request, form_class, template_name, form_kwargs=None, form_args=None,
-              redirect_to=None, message="", after_save_callback=None, extra_context=None):
+              redirect_to=None, message="", after_save_callback=None, extra_context=None,
+              include_html_in_ajax=True):
     """
     Handles the "display form"->"submit form"->"redisplay if errors or redirect to page" flow 
 
@@ -36,6 +37,9 @@ def save_form(request, form_class, template_name, form_kwargs=None, form_args=No
     :type after_save_callback: function
     :param extra_context: Extra context variables used for template rendering
     :type extra_context: dict
+    :param include_html_in_ajax: Should the template be rendered and returned in the AJAX
+        json result packet?
+    :type include_html_in_ajax: bool
     :rtype: HttpResponse
     """
     if not extra_context:
@@ -63,9 +67,10 @@ def save_form(request, form_class, template_name, form_kwargs=None, form_args=No
             if callable(redirect_to):
                 redirect_to = redirect_to(form=form, saved_object=save_result)
             if request.is_ajax():
-                return HttpResponse(json.dumps({
-                    'result': 'success',
-                    'html': get_template(template_name).render(context)}))
+                result = {'result': 'success'}
+                if include_html_in_ajax:
+                    result['html'] = get_template(template_name).render(context)
+                return HttpResponse(json.dumps(result))
             else:
                 return HttpResponseRedirect(redirect_to)
         else:
@@ -78,9 +83,10 @@ def save_form(request, form_class, template_name, form_kwargs=None, form_args=No
                         encoding.smart_str(form.data.get(field), encoding='ascii', errors='ignore'),
                         form.errors[field].as_text()))
             if request.is_ajax():
-                return HttpResponse(json.dumps({
-                    'result': 'error', 'errors': form.errors,
-                    'html': get_template(template_name).render(context)}))
+                result = {'result': 'error', 'errors': form.errors}
+                if include_html_in_ajax:
+                    result['html'] = get_template(template_name).render(context)
+                return HttpResponse(json.dumps(result))
     else:
         context['form'] = form_class(*form_args, **form_kwargs)
     return render_to_response(template_name, context_instance=context)

@@ -5,7 +5,7 @@ readme = open('README.rst').read()
 
 setup(
     name='django-save-form',
-    version='0.1.0',
+    version='0.1.1',
     author_email='gattster@gmail.com',
     author='Philip Gatt',
     description="Encapsulate the common workflow of saving a form if "
