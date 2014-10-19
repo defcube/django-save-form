@@ -28,8 +28,9 @@ def save_form(request, form_class, template_name, form_kwargs=None, form_args=No
     :type form_kwargs: dict
     :param form_args: Positional args to be passed into the form upin initialization
     :type form_args: list
-    :param redirect_to: URL to redirect to upon successful form submission
-    :type redirect_to: str
+    :param redirect_to: URL to redirect to upon successful form submission, or a function called
+        with 2 arguments, the form and the save result
+    :type redirect_to: str | function
     :param message: Message to add to django's messages framework upon successful form submission
     :type message: str
     :param after_save_callback: Called after a successful form submission. Called with 2 arguments,
