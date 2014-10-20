@@ -16,7 +16,7 @@ def save_form(request, form_class, template_name, form_kwargs=None, form_args=No
               redirect_to=None, message="", after_save_callback=None, extra_context=None,
               include_html_in_ajax=True):
     """
-    Handles the "display form"->"submit form"->"redisplay if errors or redirect to page" flow 
+    Handles the "display form"->"submit form"->"redisplay if errors or redirect to page" flow
 
     If the request is ajax, it returns json with a "result": "success" flag.
 
@@ -67,6 +67,7 @@ def save_form(request, form_class, template_name, form_kwargs=None, form_args=No
                 messages.add_message(request, messages.SUCCESS, message)
             if callable(redirect_to):
                 redirect_to = redirect_to(form=form, saved_object=save_result)
+            context['save_result'] = save_result
             if request.is_ajax():
                 result = {'result': 'success'}
                 if include_html_in_ajax:
